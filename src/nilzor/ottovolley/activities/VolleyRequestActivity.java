@@ -17,6 +17,7 @@ import nilzor.ottovolley.messages.VolleyRequestSuccess;
 import nilzor.ottovolley.okhttpextensions.OkHttpGsonCallback;
 import nilzor.ottovolley.okhttpextensions.OkHttpGsonRequest;
 import nilzor.ottovolley.okhttpextensions.OkHttpGsonResponse;
+import nilzor.ottovolley.okhttpextensions.TestClass;
 import nilzor.ottovolley.viewmodels.VolleyRequestActivityViewModel;
 
 import java.util.ArrayList;
@@ -34,9 +35,12 @@ public class VolleyRequestActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("OVDR", "onCreate()");
+        Log.d("OVDR", "adsf()");
+        Log.d("OVDR", "qwerty()");
         setContentView(R.layout.main);
         ServiceLocator.ensureInitialized(this);
         _model = new VolleyRequestActivityViewModel();
+        TestClass test = new TestClass();
     }
 
     @Override
@@ -96,7 +100,7 @@ public class VolleyRequestActivity extends Activity {
     public void onMultiGetClicked(final View view) {
         _rqStart = System.currentTimeMillis();
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 80; i++) {
             OkHttpGsonRequest<HttpBinGetResponse> req = new OkHttpGsonRequest<HttpBinGetResponse>(Url, HttpBinGetResponse.class);
             req.call(new OkHttpGsonCallback<HttpBinGetResponse>() {
                 @Override

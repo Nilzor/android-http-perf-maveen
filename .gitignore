@@ -8,3 +8,4 @@ target/*
 workspace.xml
 uiDesigner.xml
 vcs.xml
+.idea/libraries

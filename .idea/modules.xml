@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/OttoVolleyDoneRight.iml" filepath="$PROJECT_DIR$/OttoVolleyDoneRight.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../libs/okhttp/okhttp/okhttp.iml" filepath="$PROJECT_DIR$/../../libs/okhttp/okhttp/okhttp.iml" />
     </modules>
   </component>
 </project>
