@@ -10,17 +10,20 @@ import android.widget.TextView;
 import com.google.gson.reflect.TypeToken;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.future.ResponseFuture;
 import com.squareup.otto.Subscribe;
 import nilzor.httpperformance.R;
 import nilzor.httpperformance.ServiceLocator;
 import nilzor.httpperformance.core.OttoGsonRequest;
 import nilzor.httpperformance.entities.HttpBinGetResponse;
+import nilzor.httpperformance.entities.TestServiceResponse;
 import nilzor.httpperformance.messages.VolleyRequestSuccess;
 import nilzor.httpperformance.viewmodels.VolleyRequestActivityViewModel;
 
 public class VolleyRequestActivity extends Activity {
     //private final String Url = "http://httpbin.org/get";
-    private final String Url = "http://httpbin.org/delay/1";
+    //private final String Url = "http://httpbin.org/delay/1";
+    private final String Url = "http://5.150.231.5:80";
     private VolleyRequestActivityViewModel _model;
     long _rqStart;
 
@@ -32,6 +35,8 @@ public class VolleyRequestActivity extends Activity {
         setContentView(R.layout.main);
         ServiceLocator.ensureInitialized(this);
         _model = new VolleyRequestActivityViewModel();
+        Ion.getDefault(this).configure().setLogging("ION", Log.DEBUG);
+        Ion.getDefault(this).configure();
     }
 
     @Override
@@ -82,10 +87,14 @@ public class VolleyRequestActivity extends Activity {
     }
 
     public void onPerformHttpClicked(final View view) {
-        OttoGsonRequest<HttpBinGetResponse> request = new OttoGsonRequest<HttpBinGetResponse>(ServiceLocator.EventBus, Url, HttpBinGetResponse.class);
-        Log.d("OVDR", "Request begin: " + request.requestId);
-        ServiceLocator.VolleyRequestQueue.add(request);
-        updateUiForRequestSent(request);
+        ResponseFuture<TestServiceResponse> future = Ion.with(this).load(Url).as(TestServiceResponse.class);
+        future.setCallback(new FutureCallback<TestServiceResponse>() {
+            @Override
+            public void onCompleted(Exception e, TestServiceResponse testServiceResponse) {
+                int a= 1;
+                int b = a+ 4;
+            }
+        });
     }
 
 
