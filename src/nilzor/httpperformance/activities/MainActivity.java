@@ -13,11 +13,14 @@ import com.koushikdutta.ion.future.ResponseFuture;
 import com.squareup.otto.Subscribe;
 import nilzor.httpperformance.R;
 import nilzor.httpperformance.ServiceLocator;
+import nilzor.httpperformance.core.Action;
 import nilzor.httpperformance.core.OttoGsonRequest;
 import nilzor.httpperformance.entities.HttpBinGetResponse;
 import nilzor.httpperformance.entities.TestServiceResponse;
 import nilzor.httpperformance.messages.VolleyRequestSuccess;
 import nilzor.httpperformance.viewmodels.VolleyRequestActivityViewModel;
+
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     //private final String Url = "http://httpbin.org/get";
@@ -90,31 +93,83 @@ public class MainActivity extends Activity {
 
     }
 
-    // OkHttp
-    public void onMultiGetClicked(final View view) {
-        onMultiGetClicked_nio();
+    private ArrayList<RequestToken> mRequests;
+
+    public void onIonGsonSpew(final View view) {
+        spewRequests(new Action() {
+            @Override
+            public void act() {
+                performIonGsonHttpAsync();
+            }
+        });
     }
 
-    private void onMultiGetClicked_nio() {
-        for (int i = 0; i < 80; i++) {
-            performIonHttpAsync();
+    public void onIonStringSpew(final View view) {
+        spewRequests(new Action() {
+            @Override
+            public void act() {
+                performIonStringAsync();
+            }
+        });
+    }
+
+    private static final int SPEW_COUNT = 80;
+
+    private void spewRequests(Action action) {
+        mRequests = new ArrayList<RequestToken>(SPEW_COUNT);
+        for (int i = 0; i < SPEW_COUNT; i++) {
+            action.act();
         }
     }
 
-    private static final String ReqIdHeaderKey = "X-RequestId";
+    private void onRequestDone(RequestToken req) {
+        mRequests.add(req);
+        if (mRequests.size() == SPEW_COUNT) {
+            onAllRequestsDone();
+        }
+    }
 
-    private void performIonHttpAsync() {
-        final RequestToken reqId = new RequestToken();
+    private void onAllRequestsDone() {
+        long totalTime = getMaxRequestTime();
+        Log.d(TAG, String.format("Total time: %s", totalTime));
+    }
+
+    private long getMaxRequestTime() {;
+        long max = 0;
+        for (RequestToken token : mRequests) {
+            max = Math.max(token.getDuration(), max);
+        }
+        return max;
+    }
+
+    private void performIonGsonHttpAsync() {
+        final RequestToken req = new RequestToken();
         ResponseFuture<TestServiceResponse> future = Ion.with(this).load(Url).as(TestServiceResponse.class);
-        reqId.onStart();
+        req.onStart();
         future.setCallback(new FutureCallback<TestServiceResponse>() {
             @Override
             public void onCompleted(Exception e, TestServiceResponse testServiceResponse) {
-                reqId.onDone();
-                Log.d(TAG, String.format("Request %02d finished in %04d ms", reqId.id, reqId.getDuration()));
+                req.onDone();
+                Log.d(TAG, String.format("GsonReq %02d finished in %04d ms", req.id, req.getDuration()));
+                onRequestDone(req);
             }
         });
-        Log.d(TAG, String.format("Request %02d started", reqId.id));
+        Log.d(TAG, String.format("GsonReq %02d started", req.id));
+    }
+
+    private void performIonStringAsync() {
+        final RequestToken req = new RequestToken();
+        ResponseFuture<String> future = Ion.with(this).load(Url).asString();
+        req.onStart();
+        future.setCallback(new FutureCallback<String>() {
+            @Override
+            public void onCompleted(Exception e, String testServiceResponse) {
+                req.onDone();
+                Log.d(TAG, String.format("StringReq %02d finished in %04d ms", req.id, req.getDuration()));
+                onRequestDone(req);
+            }
+        });
+        Log.d(TAG, String.format("StringReq %02d started", req.id));
     }
 
     private static class RequestToken {
