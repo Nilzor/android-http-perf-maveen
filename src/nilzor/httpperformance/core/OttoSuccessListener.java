@@ -1,8 +1,8 @@
-package nilzor.ottovolley.core;
+package nilzor.httpperformance.core;
 
 import com.android.volley.Response;
 import com.squareup.otto.Bus;
-import nilzor.ottovolley.messages.VolleyRequestSuccess;
+import nilzor.httpperformance.messages.VolleyRequestSuccess;
 
 public class OttoSuccessListener<T> implements Response.Listener<T>  {
     public int requestId;

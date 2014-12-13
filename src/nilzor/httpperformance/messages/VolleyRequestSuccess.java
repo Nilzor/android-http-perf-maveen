@@ -1,4 +1,4 @@
-package nilzor.ottovolley.messages;
+package nilzor.httpperformance.messages;
 
 public class VolleyRequestSuccess<T> {
     public T response;

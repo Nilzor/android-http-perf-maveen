@@ -1,9 +1,9 @@
-package nilzor.ottovolley.core;
+package nilzor.httpperformance.core;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.squareup.otto.Bus;
-import nilzor.ottovolley.messages.VolleyRequestFailed;
+import nilzor.httpperformance.messages.VolleyRequestFailed;
 
 
 public class OttoErrorListener implements Response.ErrorListener {

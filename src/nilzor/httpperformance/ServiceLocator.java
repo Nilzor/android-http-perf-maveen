@@ -1,11 +1,11 @@
-package nilzor.ottovolley;
+package nilzor.httpperformance;
 
 
 import android.content.Context;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.squareup.otto.Bus;
-import nilzor.ottovolley.core.OttoGsonResponseBuffer;
+import nilzor.httpperformance.core.OttoGsonResponseBuffer;
 
 public class ServiceLocator {
     public static Bus EventBus;

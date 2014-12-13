@@ -1,4 +1,4 @@
-package nilzor.ottovolley.activities;
+package nilzor.httpperformance.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,18 +7,16 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.squareup.otto.Subscribe;
-import nilzor.ottovolley.R;
-import nilzor.ottovolley.ServiceLocator;
-import nilzor.ottovolley.core.OttoGsonRequest;
-import nilzor.ottovolley.entities.HttpBinGetResponse;
-import nilzor.ottovolley.messages.VolleyRequestSuccess;
-import nilzor.ottovolley.viewmodels.VolleyRequestActivityViewModel;
+import nilzor.httpperformance.R;
+import nilzor.httpperformance.ServiceLocator;
+import nilzor.httpperformance.core.OttoGsonRequest;
+import nilzor.httpperformance.entities.HttpBinGetResponse;
+import nilzor.httpperformance.messages.VolleyRequestSuccess;
+import nilzor.httpperformance.viewmodels.VolleyRequestActivityViewModel;
 
 public class VolleyRequestActivity extends Activity {
     //private final String Url = "http://httpbin.org/get";

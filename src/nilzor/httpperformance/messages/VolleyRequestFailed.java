@@ -1,4 +1,4 @@
-package nilzor.ottovolley.messages;
+package nilzor.httpperformance.messages;
 
 import com.android.volley.VolleyError;
 

@@ -1,4 +1,4 @@
-package nilzor.ottovolley.entities;
+package nilzor.httpperformance.entities;
 
 import com.google.gson.annotations.SerializedName;
 

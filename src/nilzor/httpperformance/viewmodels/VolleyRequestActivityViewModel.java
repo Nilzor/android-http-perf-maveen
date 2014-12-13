@@ -1,4 +1,4 @@
-package nilzor.ottovolley.viewmodels;
+package nilzor.httpperformance.viewmodels;
 
 import java.io.Serializable;
 

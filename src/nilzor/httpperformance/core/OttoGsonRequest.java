@@ -1,7 +1,7 @@
-package nilzor.ottovolley.core;
+package nilzor.httpperformance.core;
 
 import com.squareup.otto.Bus;
-import nilzor.ottovolley.volleyextensions.GsonRequest;
+import nilzor.httpperformance.volleyextensions.GsonRequest;
 
 /** GsonRequest which passes the result on to an Otto Message Bus */
 public class OttoGsonRequest<T> extends GsonRequest<T> {

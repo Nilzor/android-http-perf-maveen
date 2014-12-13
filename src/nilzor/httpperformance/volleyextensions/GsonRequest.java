@@ -1,4 +1,4 @@
-package nilzor.ottovolley.volleyextensions;
+package nilzor.httpperformance.volleyextensions;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;

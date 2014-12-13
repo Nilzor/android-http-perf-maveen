@@ -1,9 +1,9 @@
-package nilzor.ottovolley.core;
+package nilzor.httpperformance.core;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import nilzor.ottovolley.messages.VolleyRequestFailed;
-import nilzor.ottovolley.messages.VolleyRequestSuccess;
+import nilzor.httpperformance.messages.VolleyRequestFailed;
+import nilzor.httpperformance.messages.VolleyRequestSuccess;
 
 import java.util.ArrayList;
 
