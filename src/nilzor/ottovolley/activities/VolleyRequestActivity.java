@@ -106,7 +106,7 @@ public class VolleyRequestActivity extends Activity {
                 @Override
                 public void onResponse(OkHttpGsonResponse<HttpBinGetResponse> response) {
                     long time = System.currentTimeMillis() - _rqStart;
-                    Log.d("OVDR", String.format("%s Response #%s ", time, "X"));
+                    Log.d("OVDR", String.format("%s Response #%s ", time, response.Payload.headers.X_Request_Id));
                 }
             });
 
