@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import com.google.gson.reflect.TypeToken;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.future.ResponseFuture;
@@ -20,18 +19,17 @@ import nilzor.httpperformance.entities.TestServiceResponse;
 import nilzor.httpperformance.messages.VolleyRequestSuccess;
 import nilzor.httpperformance.viewmodels.VolleyRequestActivityViewModel;
 
-public class VolleyRequestActivity extends Activity {
+public class MainActivity extends Activity {
     //private final String Url = "http://httpbin.org/get";
     //private final String Url = "http://httpbin.org/delay/1";
     private final String Url = "http://5.150.231.5:80";
     private VolleyRequestActivityViewModel _model;
-    long _rqStart;
-
+    private static final String TAG = "OVDR";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("OVDR", "onCreate()");
+        Log.d(TAG, "onCreate()");
         setContentView(R.layout.main);
         ServiceLocator.ensureInitialized(this);
         _model = new VolleyRequestActivityViewModel();
@@ -42,7 +40,7 @@ public class VolleyRequestActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("OVDR", "onPause()");
+        Log.d(TAG, "onPause()");
         if(_model.listenForResponse) {
             ServiceLocator.ResponseBuffer.startSaving();
             ServiceLocator.EventBus.unregister(this);
@@ -52,7 +50,7 @@ public class VolleyRequestActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("OVDR", "onResume()");
+        Log.d(TAG, "onResume()");
         if (_model.listenForResponse) {
             ServiceLocator.EventBus.register(this);
             ServiceLocator.ResponseBuffer.stopAndProcess();
@@ -76,7 +74,7 @@ public class VolleyRequestActivity extends Activity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        Log.d("OVDR", "onRestoreInstanceState()");
+        Log.d(TAG, "onRestoreInstanceState()");
         _model = (VolleyRequestActivityViewModel) savedInstanceState.getSerializable("Model");
     }
 
@@ -86,18 +84,11 @@ public class VolleyRequestActivity extends Activity {
         ((Switch) findViewById(R.id.eventListenSwitch)).setChecked(_model.listenForResponse);
     }
 
+    /*******************************************************/
+
     public void onPerformHttpClicked(final View view) {
-        ResponseFuture<TestServiceResponse> future = Ion.with(this).load(Url).as(TestServiceResponse.class);
-        future.setCallback(new FutureCallback<TestServiceResponse>() {
-            @Override
-            public void onCompleted(Exception e, TestServiceResponse testServiceResponse) {
-                int a= 1;
-                int b = a+ 4;
-            }
-        });
+
     }
-
-
 
     // OkHttp
     public void onMultiGetClicked(final View view) {
@@ -105,21 +96,43 @@ public class VolleyRequestActivity extends Activity {
     }
 
     private void onMultiGetClicked_nio() {
-        _rqStart = System.currentTimeMillis();
-
         for (int i = 0; i < 80; i++) {
-            Ion.with(this)
-                    .load(Url)
-                    .as(new TypeToken<HttpBinGetResponse>(){})
-                    .setCallback(new FutureCallback<HttpBinGetResponse>() {
-                        @Override
-                        public void onCompleted(Exception e, HttpBinGetResponse httpBinGetResponse) {
-                            long time = System.currentTimeMillis() - _rqStart;
-                            Log.d("OVDR", String.format("%s Response #%s ", time, httpBinGetResponse.headers.X_Request_Id));
-                        }
-                    });
-            long time = System.currentTimeMillis() - _rqStart;
-            Log.d("OVDR", String.format("%s Queued request #%s with ID %s", time, i, "?"));
+            performIonHttpAsync();
+        }
+    }
+
+    private static final String ReqIdHeaderKey = "X-RequestId";
+
+    private void performIonHttpAsync() {
+        final RequestToken reqId = new RequestToken();
+        ResponseFuture<TestServiceResponse> future = Ion.with(this).load(Url).as(TestServiceResponse.class);
+        reqId.onStart();
+        future.setCallback(new FutureCallback<TestServiceResponse>() {
+            @Override
+            public void onCompleted(Exception e, TestServiceResponse testServiceResponse) {
+                reqId.onDone();
+                Log.d(TAG, String.format("Request %02d finished in %04d ms", reqId.id, reqId.getDuration()));
+            }
+        });
+        Log.d(TAG, String.format("Request %02d started", reqId.id));
+    }
+
+    private static class RequestToken {
+        private static int mIdCounter = 0;
+        public int id = ++mIdCounter;
+        private long startTime;
+        private long endTime;
+
+        public long getDuration() {
+            return endTime - startTime;
+        }
+
+        public void onStart() {
+            startTime = System.currentTimeMillis();
+        }
+
+        public void onDone() {
+            endTime = System.currentTimeMillis();
         }
     }
 
@@ -127,7 +140,7 @@ public class VolleyRequestActivity extends Activity {
         if (isChecked != _model.listenForResponse){
             _model.listenForResponse = isChecked;
             registerServiceBus(_model.listenForResponse);
-            Log.d("OVDR", "Listen for response: " + _model.listenForResponse);
+            Log.d(TAG, "Listen for response: " + _model.listenForResponse);
         }
     }
 
@@ -144,7 +157,7 @@ public class VolleyRequestActivity extends Activity {
 
     @Subscribe
     public void onHttpResponseReceived(VolleyRequestSuccess<HttpBinGetResponse> message) {
-        Log.d("OVDR", "Request end: " + message.requestId);
+        Log.d(TAG, "Request end: " + message.requestId);
         updateUiForResponseReceived(message);
     }
     private void updateUiForRequestSent(OttoGsonRequest<HttpBinGetResponse> request) {
