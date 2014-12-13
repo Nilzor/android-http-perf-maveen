@@ -7,6 +7,11 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.koushikdutta.async.future.Future;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 import com.squareup.otto.Subscribe;
 import nilzor.ottovolley.R;
 import nilzor.ottovolley.ServiceLocator;
@@ -19,7 +24,7 @@ public class VolleyRequestActivity extends Activity {
     //private final String Url = "http://httpbin.org/get";
     private final String Url = "http://httpbin.org/delay/1";
     private VolleyRequestActivityViewModel _model;
-
+    long _rqStart;
 
 
     @Override
@@ -83,6 +88,32 @@ public class VolleyRequestActivity extends Activity {
         Log.d("OVDR", "Request begin: " + request.requestId);
         ServiceLocator.VolleyRequestQueue.add(request);
         updateUiForRequestSent(request);
+    }
+
+
+
+    // OkHttp
+    public void onMultiGetClicked(final View view) {
+        onMultiGetClicked_nio();
+    }
+
+    private void onMultiGetClicked_nio() {
+        _rqStart = System.currentTimeMillis();
+
+        for (int i = 0; i < 80; i++) {
+            Ion.with(this)
+                    .load(Url)
+                    .as(new TypeToken<HttpBinGetResponse>(){})
+                    .setCallback(new FutureCallback<HttpBinGetResponse>() {
+                        @Override
+                        public void onCompleted(Exception e, HttpBinGetResponse httpBinGetResponse) {
+                            long time = System.currentTimeMillis() - _rqStart;
+                            Log.d("OVDR", String.format("%s Response #%s ", time, httpBinGetResponse.headers.X_Request_Id));
+                        }
+                    });
+            long time = System.currentTimeMillis() - _rqStart;
+            Log.d("OVDR", String.format("%s Queued request #%s with ID %s", time, i, "?"));
+        }
     }
 
     public void onListenForResponseChanged(boolean isChecked) {
