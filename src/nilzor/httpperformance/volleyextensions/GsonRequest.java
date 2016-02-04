@@ -1,5 +1,7 @@
 package nilzor.httpperformance.volleyextensions;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -66,10 +68,13 @@ public class GsonRequest<T> extends Request<T> {
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         try {
+            Log.d("nperf", "Parse begin");
             String json = new String(
                     response.data, HttpHeaderParser.parseCharset(response.headers));
-            return Response.success(
+            Response<T> res =  Response.success(
                     gson.fromJson(json, clazz), HttpHeaderParser.parseCacheHeaders(response));
+            Log.d("nperf", "Parse end");
+            return res;
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         } catch (JsonSyntaxException e) {

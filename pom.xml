@@ -23,6 +23,7 @@
             <artifactId>gson</artifactId>
             <version>2.2.4</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>com.koushikdutta.ion</groupId>
             <artifactId>ion</artifactId>
@@ -40,5 +41,6 @@
             <artifactId>support-v4</artifactId>
             <version>r7</version>
         </dependency>
+        -->
     </dependencies>
 </project>

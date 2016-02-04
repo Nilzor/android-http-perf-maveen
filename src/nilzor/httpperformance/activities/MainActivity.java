@@ -2,15 +2,20 @@ package nilzor.httpperformance.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Debug;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.future.ResponseFuture;
 import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
+
 import nilzor.httpperformance.R;
 import nilzor.httpperformance.ServiceLocator;
 import nilzor.httpperformance.core.Action;
@@ -20,14 +25,12 @@ import nilzor.httpperformance.entities.TestServiceResponse;
 import nilzor.httpperformance.messages.VolleyRequestSuccess;
 import nilzor.httpperformance.viewmodels.VolleyRequestActivityViewModel;
 
-import java.util.ArrayList;
-
 public class MainActivity extends Activity {
     //private final String Url = "http://httpbin.org/get";
     //private final String Url = "http://httpbin.org/delay/1";
     private final String Url = "http://5.150.231.5:80";
     private VolleyRequestActivityViewModel _model;
-    private static final String TAG = "OVDR";
+    private static final String TAG = "nperf";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,6 +105,8 @@ public class MainActivity extends Activity {
                 performIonGsonHttpAsync();
             }
         });
+        int a =1;
+        int b = a+1;
     }
 
     public void onIonStringSpew(final View view) {
@@ -116,6 +121,8 @@ public class MainActivity extends Activity {
     private static final int SPEW_COUNT = 80;
 
     private void spewRequests(Action action) {
+        Debug.startMethodTracing("spew");
+        new RequestToken().onDone();
         mRequests = new ArrayList<RequestToken>(SPEW_COUNT);
         for (int i = 0; i < SPEW_COUNT; i++) {
             action.act();
@@ -132,6 +139,7 @@ public class MainActivity extends Activity {
     private void onAllRequestsDone() {
         long totalTime = getMaxRequestTime();
         Log.d(TAG, String.format("Total time: %s", totalTime));
+        Debug.stopMethodTracing();
     }
 
     private long getMaxRequestTime() {;
@@ -146,15 +154,32 @@ public class MainActivity extends Activity {
         final RequestToken req = new RequestToken();
         ResponseFuture<TestServiceResponse> future = Ion.with(this).load(Url).as(TestServiceResponse.class);
         req.onStart();
-        future.setCallback(new FutureCallback<TestServiceResponse>() {
+        /*future.setCallback(new FutureCallback<TestServiceResponse>() {
             @Override
             public void onCompleted(Exception e, TestServiceResponse testServiceResponse) {
                 req.onDone();
                 Log.d(TAG, String.format("GsonReq %02d finished in %04d ms", req.id, req.getDuration()));
                 onRequestDone(req);
             }
-        });
+        });*/
+        future.setCallback(new CbClass(req, this));
         Log.d(TAG, String.format("GsonReq %02d started", req.id));
+    }
+
+    public static class CbClass implements FutureCallback<TestServiceResponse> {
+        private RequestToken req;
+        private MainActivity mact;
+
+        public CbClass(RequestToken req, MainActivity mact) {
+            this.req = req;
+            this.mact = mact;
+        }
+        @Override
+        public void onCompleted(Exception e, TestServiceResponse result) {
+            req.onDone();
+            Log.d(TAG, String.format("GsonReq %02d finished in %04d ms", req.id, req.getDuration()));
+            mact.onRequestDone(req);
+        }
     }
 
     private void performIonStringAsync() {

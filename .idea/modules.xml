@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Android Http Performance.iml" filepath="$PROJECT_DIR$/Android Http Performance.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../libs/AndroidAsync/AndroidAsync/AndroidAsync.iml" filepath="$PROJECT_DIR$/../../libs/AndroidAsync/AndroidAsync/AndroidAsync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../libs/ion/ion/ion.iml" filepath="$PROJECT_DIR$/../../libs/ion/ion/ion.iml" />
     </modules>
   </component>
 </project>
